@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/LibNetCore.AspNetCore/LibNetCore.AspNetCore.csproj" />
+    <Project Path="src/LibNetCore.Core/LibNetCore.Core.csproj" />
+    <Project Path="src/LibNetCore.EntityFrameworkCore/LibNetCore.EntityFrameworkCore.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/LibNetCore.Core.Tests/LibNetCore.Core.Tests.csproj" />
+  </Folder>
+</Solution>

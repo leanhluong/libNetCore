@@ -1,0 +1,49 @@
+<Project>
+
+  <!--
+    ============================================================
+    MỘT NGUỒN SỰ THẬT cho version + metadata của mọi package.
+
+    LOCKSTEP VERSIONING: cả 3 package cùng chung MỘT số version.
+    Phát hành = sửa <Version> ở đây MỘT lần, rồi tag repo v$(Version).
+
+    KHÔNG thêm <Version> vào từng .csproj — nó sẽ ghi đè chỗ này
+    một cách âm thầm và làm version lệch nhau.
+    ============================================================
+  -->
+
+  <PropertyGroup>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+
+    <!-- Bắt null lúc biên dịch, không đợi tới lúc chạy mới nổ NullReferenceException -->
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Thư viện dùng chung thì không được có warning. Warning hôm nay = bug của người dùng ngày mai -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+
+  <!-- Metadata NuGet — chỉ áp cho project trong src/, không áp cho test -->
+  <PropertyGroup Condition="'$(IsPackable)' != 'false' AND $(MSBuildProjectDirectory.Contains('src'))">
+    <Authors>Le Anh Luong</Authors>
+    <Company>ONoOffice</Company>
+    <Description>Bộ mảnh dùng chung không dính nghiệp vụ cho dịch vụ .NET.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/leanhluong/libNetCore</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(PackageReadmeFile)' != ''">
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+
+</Project>
