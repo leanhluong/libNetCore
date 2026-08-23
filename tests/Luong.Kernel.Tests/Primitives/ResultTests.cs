@@ -70,6 +70,20 @@ public class ResultTests
         Assert.Equal("xin chào", result.Value);
     }
 
+    // Bản không-generic cũng phải đổi ngầm được. Thiếu nó thì mọi hành vi nghiệp vụ
+    // trả Result (Deactivate, TransferOwnership...) phải gõ Result.Failure(...) dài dòng,
+    // trong khi bản Result<T> ngay cạnh lại viết gọn được — hai lối viết cho cùng một ý.
+    [Fact]
+    public void ImplicitConversion_FromError_GivesNonGenericFailure()
+    {
+        var error = Error.Conflict("Tenant.AlreadyHasOwner", "Đã có chủ sở hữu.");
+
+        Result result = error;
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(error, result.Error);
+    }
+
     [Fact]
     public void ImplicitConversion_FromError_GivesFailure()
     {

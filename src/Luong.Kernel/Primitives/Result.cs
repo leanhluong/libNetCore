@@ -42,6 +42,15 @@ public class Result
 
     public static Result Failure(Error error) => new(false, error);
 
+    /// <summary>
+    /// Cho phép hành vi nghiệp vụ viết thẳng <c>return IdentityErrors.Tenants.AlreadyHasOwner;</c>.
+    ///
+    /// Bản <see cref="Result{TValue}"/> đã có phép chuyển này từ đầu; thiếu nó ở bản
+    /// không-generic thì hai kiểu ngay cạnh nhau lại có hai lối viết khác nhau cho cùng
+    /// một ý — và người dùng thư viện phải nhớ chỗ nào viết được gọn, chỗ nào không.
+    /// </summary>
+    public static implicit operator Result(Error error) => Failure(error);
+
     public static Result<TValue> Success<TValue>(TValue value)
     {
         ArgumentNullException.ThrowIfNull(value);
