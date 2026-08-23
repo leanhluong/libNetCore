@@ -7,6 +7,12 @@ on:
   push:
     tags: ['v*']
 
+  # Cho phép chạy lại BẰNG TAY từ giao diện GitHub, không cần tạo tag mới.
+  # Cần khi lần phát hành trước hỏng ở giữa chừng: gói đã lên feed rồi nhưng
+  # bước sau đó đỏ. Không có nó thì cách duy nhất là dời tag — mà dời tag đã
+  # phát hành ra ngoài là điều KHÔNG được làm khi đã có người dùng version đó.
+  workflow_dispatch:
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -68,18 +74,36 @@ jobs:
       # ⚠️ Khác GitHub Packages ở một điểm KHÔNG thể sửa: phiên bản đã lên nuget.org
       # thì KHÔNG BAO GIỜ xoá được, chỉ ẩn khỏi tìm kiếm (unlist). Ai biết số phiên
       # bản vẫn cài được. Nên bước này luôn nằm SAU bước test.
-      - name: Đẩy lên nuget.org
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        run: |
-          if [ -z "$NUGET_API_KEY" ]; then
-            echo "::warning::Chưa có secret NUGET_API_KEY — bỏ qua bước đẩy lên nuget.org."
-            exit 0
-          fi
-          dotnet nuget push "nupkg/*.nupkg" \
-            --source "https://api.nuget.org/v3/index.json" \
-            --api-key "$NUGET_API_KEY" \
-            --skip-duplicate
+      # ─────────────────────────────────────────────────────────────────────
+      # TẠM TẮT — 2026-08-23. API key hiện tại bị nuget.org trả 403:
+      #   "The specified API key is invalid, has expired, or does not have
+      #    permission to access the specified package."
+      #
+      # Mở lại khi đã kiểm ba thứ (xem README, mục "Phát hành lên nuget.org"):
+      #   1. Scope của key phải là "Push new packages and package versions",
+      #      KHÔNG phải "Push only new package versions" — gói lần đầu lên thì
+      #      loại thứ hai bị từ chối.
+      #   2. Glob pattern phải phủ CẢ "Luong.Kernel" trơn lẫn "Luong.Kernel.*".
+      #      Chỉ khai "Luong.Kernel.*" là không phủ gói gốc.
+      #   3. Tài khoản nuget.org đã xác nhận email chưa — chưa xác nhận thì
+      #      không đẩy được gói nào.
+      #
+      # Thử tay cho nhanh trước khi mở lại:
+      #   dotnet nuget push nupkg/Luong.Kernel.0.1.0.nupkg \
+      #     --source https://api.nuget.org/v3/index.json --api-key <KEY>
+      # ─────────────────────────────────────────────────────────────────────
+      # - name: Đẩy lên nuget.org
+      #   env:
+      #     NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      #   run: |
+      #     if [ -z "$NUGET_API_KEY" ]; then
+      #       echo "::warning::Chưa có secret NUGET_API_KEY — bỏ qua bước đẩy lên nuget.org."
+      #       exit 0
+      #     fi
+      #     dotnet nuget push "nupkg/*.nupkg" \
+      #       --source "https://api.nuget.org/v3/index.json" \
+      #       --api-key "$NUGET_API_KEY" \
+      #       --skip-duplicate
 
       - name: Tạo bản phát hành trên GitHub
         uses: softprops/action-gh-release@v2
