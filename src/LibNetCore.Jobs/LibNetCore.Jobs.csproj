@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\LibNetCore.Core\LibNetCore.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.24" />
+    <PackageReference Include="Hangfire.Core" Version="1.8.24" />
+    <PackageReference Include="Hangfire.NetCore" Version="1.8.24" />
+    <PackageReference Include="Hangfire.PostgreSql" Version="1.21.1" />
+
+    <!--
+      Hangfire.Core kéo theo Newtonsoft.Json 11.0.1 — có lỗ hổng nghiêm trọng đã công bố
+      (GHSA-5crp-9r3c-p9vr). Khai báo thẳng phiên bản mới hơn ở đây để NuGet dùng nó thay
+      cho phiên bản cũ mà thư viện kia mang theo. Đây là cách chuẩn xử lý phụ thuộc gián
+      tiếp bị dính lỗ hổng: KHÔNG tắt cảnh báo, mà nâng phiên bản lên.
+    -->
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+</Project>

@@ -3,6 +3,7 @@
     <Project Path="src/LibNetCore.AspNetCore/LibNetCore.AspNetCore.csproj" />
     <Project Path="src/LibNetCore.Core/LibNetCore.Core.csproj" />
     <Project Path="src/LibNetCore.EntityFrameworkCore/LibNetCore.EntityFrameworkCore.csproj" />
+    <Project Path="src/LibNetCore.Jobs/LibNetCore.Jobs.csproj" />
     <Project Path="src/LibNetCore.Messaging/LibNetCore.Messaging.csproj" />
   </Folder>
   <Folder Name="/tests/">
