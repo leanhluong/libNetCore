@@ -91,3 +91,55 @@ public class HttpContextCurrentUserTests
         Assert.False(user.HasPermission("employee.read"));
     }
 }
+
+public class HttpContextCurrentTenantTests
+{
+    private static ICurrentTenant From(params Claim[] claims)
+    {
+        var context = new DefaultHttpContext
+        {
+            User = new ClaimsPrincipal(new ClaimsIdentity(claims, authenticationType: "Bearer")),
+        };
+
+        return new HttpContextCurrentUser(new HttpContextAccessor { HttpContext = context });
+    }
+
+    [Fact]
+    public void TenantId_ComesFromTheTenantClaim()
+    {
+        var tenantId = Guid.NewGuid();
+
+        Assert.Equal(tenantId, From(new Claim("tenant_id", tenantId.ToString())).TenantId);
+    }
+
+    // Token không có tenant thì trả null, KHÔNG ném lỗi. Có những đường hợp lệ chạy
+    // ngoài phạm vi một workspace - ví dụ chính màn đăng nhập.
+    [Fact]
+    public void TenantId_IsNullWhenTheClaimIsMissing()
+    {
+        Assert.Null(From(new Claim("sub", Guid.NewGuid().ToString())).TenantId);
+    }
+
+    // Claim hỏng thì coi như không có. Trả về một Guid rác nguy hiểm hơn nhiều:
+    // nó sẽ được đem đi so trong bộ lọc tenant và lặng lẽ khớp với không hàng nào.
+    [Fact]
+    public void TenantId_IsNullWhenTheClaimIsNotAGuid()
+    {
+        Assert.Null(From(new Claim("tenant_id", "khong-phai-guid")).TenantId);
+    }
+
+    [Fact]
+    public void TenantId_IsNullWhenNotAuthenticated()
+    {
+        var context = new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity()) };
+
+        Assert.Null(new HttpContextCurrentUser(new HttpContextAccessor { HttpContext = context }).TenantId);
+    }
+
+    // Job nền và consumer hàng đợi chạy ngoài request. Phải trả null thay vì nổ.
+    [Fact]
+    public void TenantId_IsNullWithoutAnHttpContext()
+    {
+        Assert.Null(new HttpContextCurrentUser(new HttpContextAccessor { HttpContext = null }).TenantId);
+    }
+}

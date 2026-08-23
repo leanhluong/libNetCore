@@ -19,6 +19,9 @@ namespace Luong.Kernel.EntityFrameworkCore.Conventions;
 /// </summary>
 public static class SoftDeleteModelBuilderExtensions
 {
+    /// <summary>Tên bộ lọc — EF 10 cho phép nhiều bộ lọc có tên chạy song song trên cùng một thực thể.</summary>
+    public const string SoftDeleteFilterKey = "SoftDelete";
+
     public static ModelBuilder ApplySoftDeleteQueryFilter(this ModelBuilder modelBuilder)
     {
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
@@ -32,7 +35,10 @@ public static class SoftDeleteModelBuilderExtensions
             var parameter = Expression.Parameter(entityType.ClrType, "e");
             var isDeleted = Expression.Property(parameter, nameof(ISoftDeletable.IsDeleted));
 
-            entityType.SetQueryFilter(Expression.Lambda(Expression.Not(isDeleted), parameter));
+            // EF 10 cho phép nhiều bộ lọc CÓ TÊN cùng tồn tại trên một thực thể. Trước đây
+            // API chỉ có một bộ lọc duy nhất, nên gọi hai lần là cái sau đè mất cái trước —
+            // bộ lọc tenant biến mất, mọi workspace nhìn thấy dữ liệu của nhau, im lặng.
+            entityType.SetQueryFilter(SoftDeleteFilterKey, Expression.Lambda(Expression.Not(isDeleted), parameter));
         }
 
         return modelBuilder;

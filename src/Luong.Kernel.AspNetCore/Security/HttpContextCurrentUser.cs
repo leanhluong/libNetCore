@@ -17,10 +17,13 @@ namespace Luong.Kernel.AspNetCore.Security;
 /// dùng <see cref="ICurrentUser"/> sẽ chết ngay khi chạy ngoài request — mà đó lại
 /// chính là lý do <see cref="ICurrentUser"/> được đặt ở <c>Core</c>.
 /// </summary>
-public sealed class HttpContextCurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUser
+public sealed class HttpContextCurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUser, ICurrentTenant
 {
     /// <summary>Tên claim chứa quyền. Đổi được nếu hệ phát token dùng tên khác.</summary>
     public const string PermissionClaimType = "permission";
+
+    /// <summary>Tên claim chứa workspace. Phải khớp với tên mà bên phát token dùng.</summary>
+    public const string TenantClaimType = "tenant_id";
 
     private ClaimsPrincipal? User => httpContextAccessor.HttpContext?.User;
 
@@ -50,4 +53,18 @@ public sealed class HttpContextCurrentUser(IHttpContextAccessor httpContextAcces
             : new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
     public bool HasPermission(string permission) => Permissions.Contains(permission);
+
+    /// <summary>
+    /// Workspace lấy từ TOKEN ĐÃ KÝ, không bao giờ từ header hay body do client gửi.
+    ///
+    /// Đây là luật sống còn của multi-tenant. Nhận <c>tenantId</c> từ client nghĩa là ai
+    /// cũng đổi được một con số rồi đọc dữ liệu công ty khác — lỗ hổng IDOR ở mức nghiêm
+    /// trọng nhất. Token thì có chữ ký, sửa một ký tự là hỏng cả chữ ký.
+    ///
+    /// Claim hỏng thì trả <c>null</c> chứ không trả một Guid rác: Guid rác sẽ được đem đi
+    /// so trong bộ lọc tenant và lặng lẽ khớp với không hàng nào — người dùng thấy màn
+    /// hình trống trơn mà chẳng có lỗi nào để lần.
+    /// </summary>
+    public Guid? TenantId =>
+        Guid.TryParse(User?.FindFirst(TenantClaimType)?.Value, out var tenantId) ? tenantId : null;
 }
