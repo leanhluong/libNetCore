@@ -1,6 +1,8 @@
-# libNetCore
+# Luong.Kernel
 
 Bộ mảnh dùng chung, **không dính nghiệp vụ**, cho dịch vụ .NET 10.
+
+Gói NuGet: `Luong.Kernel.*` · Repo: [`leanhluong/libNetCore`](https://github.com/leanhluong/libNetCore)
 
 Sinh ra từ dự án [ONoOffice](https://github.com/leanhluong/ONoOffice) nhưng cố tình tách repo riêng để không bị lây nghiệp vụ vào.
 
@@ -10,7 +12,7 @@ Sinh ra từ dự án [ONoOffice](https://github.com/leanhluong/ONoOffice) nhưn
 
 ```
                        ┌─────────────────────┐
-                       │   LibNetCore.Core   │  ← không phụ thuộc gì ngoài .NET
+                       │   Luong.Kernel   │  ← không phụ thuộc gì ngoài .NET
                        └──────────┬──────────┘
      ┌──────────┬────────────┬────┴─────┬───────────┬──────────┐
      ▼          ▼            ▼          ▼           ▼          ▼
@@ -19,15 +21,15 @@ Sinh ra từ dự án [ONoOffice](https://github.com/leanhluong/ONoOffice) nhưn
 
 | Package | Chứa gì | Phụ thuộc |
 |---|---|---|
-| `LibNetCore.Core` | `Result`/`Error` · `Entity`/`AggregateRoot`/domain event · `IDateTimeProvider` · `ICurrentUser` · `PagedList` · `CaseConverter` · cổng Outbox/Inbox/Publisher/Cache/Lock | **Không gì cả** |
-| `LibNetCore.AspNetCore` | `Error` → Problem Details (RFC 7807) · correlation-id · bắt exception lọt lưới · `Result` → `IResult` | ASP.NET Core |
-| `LibNetCore.EntityFrameworkCore` | snake_case · interceptor audit · xoá mềm + bộ lọc toàn cục · bảng Outbox/Inbox + ghi cùng transaction | EF Core |
-| `LibNetCore.Messaging` | `OutboxDispatcher` · `InboxGuard` · RabbitMQ publisher/consumer · hosted service điều phối 10 giây/vòng | RabbitMQ.Client |
-| `LibNetCore.Caching` | `ICacheService` (Redis) · `IDistributedLock` nhả đúng mã bằng Lua · `CacheKey` | StackExchange.Redis |
-| `LibNetCore.Realtime` | SignalR + backplane Redis · `ClaimsUserIdProvider` nhận cả `sub` lẫn `NameIdentifier` | SignalR |
-| `LibNetCore.Jobs` | Hangfire cho việc nghiệp vụ **có lịch** · chặn cửa dashboard | Hangfire |
+| `Luong.Kernel` | `Result`/`Error` · `Entity`/`AggregateRoot`/domain event · `IDateTimeProvider` · `ICurrentUser` · `PagedList` · `CaseConverter` · cổng Outbox/Inbox/Publisher/Cache/Lock | **Không gì cả** |
+| `Luong.Kernel.AspNetCore` | `Error` → Problem Details (RFC 7807) · correlation-id · bắt exception lọt lưới · `Result` → `IResult` | ASP.NET Core |
+| `Luong.Kernel.EntityFrameworkCore` | snake_case · interceptor audit · xoá mềm + bộ lọc toàn cục · bảng Outbox/Inbox + ghi cùng transaction | EF Core |
+| `Luong.Kernel.Messaging` | `OutboxDispatcher` · `InboxGuard` · RabbitMQ publisher/consumer · hosted service điều phối 10 giây/vòng | RabbitMQ.Client |
+| `Luong.Kernel.Caching` | `ICacheService` (Redis) · `IDistributedLock` nhả đúng mã bằng Lua · `CacheKey` | StackExchange.Redis |
+| `Luong.Kernel.Realtime` | SignalR + backplane Redis · `ClaimsUserIdProvider` nhận cả `sub` lẫn `NameIdentifier` | SignalR |
+| `Luong.Kernel.Jobs` | Hangfire cho việc nghiệp vụ **có lịch** · chặn cửa dashboard | Hangfire |
 
-**Vì sao không gộp làm một:** tầng `Domain` của ứng dụng tham chiếu `LibNetCore.Core`. Gộp lại thì `Domain` kéo theo cả ASP.NET, EF, RabbitMQ, Redis và Hangfire — đúng thứ Clean Architecture cấm. Chia package biến luật đó từ **lời hứa** thành **hàng rào compiler**.
+**Vì sao không gộp làm một:** tầng `Domain` của ứng dụng tham chiếu `Luong.Kernel`. Gộp lại thì `Domain` kéo theo cả ASP.NET, EF, RabbitMQ, Redis và Hangfire — đúng thứ Clean Architecture cấm. Chia package biến luật đó từ **lời hứa** thành **hàng rào compiler**.
 
 ## Outbox + Inbox
 
@@ -111,7 +113,7 @@ GitHub Packages **luôn cần xác thực**, kể cả với package công khai.
 ```
 
 ```bash
-dotnet add package LibNetCore.Core --version 0.2.0
+dotnet add package Luong.Kernel --version 0.2.0
 ```
 
 ## Lúc đang phát triển thì đừng dùng package
@@ -122,7 +124,7 @@ Nếu ONoOffice cài qua NuGet ngay từ đầu thì mỗi lần sửa một dò
 LÚC PHÁT TRIỂN     ONoOffice ──ProjectReference──▶ ../libNetCore/src/...
                    sửa là dùng ngay, gỡ lỗi bước thẳng vào code lib
 
-KHI ĐÃ ỔN ĐỊNH     ONoOffice ──PackageReference──▶ LibNetCore.Core 0.2.0
+KHI ĐÃ ỔN ĐỊNH     ONoOffice ──PackageReference──▶ Luong.Kernel 0.2.0
                    ghim version, không bị đổi dưới chân
 ```
 

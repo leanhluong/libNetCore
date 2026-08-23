@@ -32,14 +32,25 @@
   <!-- Metadata NuGet — chỉ áp cho project trong src/, không áp cho test -->
   <PropertyGroup Condition="'$(IsPackable)' != 'false' AND $(MSBuildProjectDirectory.Contains('src'))">
     <Authors>Le Anh Luong</Authors>
-    <Company>ONoOffice</Company>
-    <Description>Bộ mảnh dùng chung không dính nghiệp vụ cho dịch vụ .NET.</Description>
+    <Company>Le Anh Luong</Company>
+    <Description>Bộ mảnh dùng chung không dính nghiệp vụ cho dịch vụ .NET: Result/Error, Entity/AggregateRoot, Outbox/Inbox, cache, khoá phân tán, CQRS.</Description>
+    <PackageTags>clean-architecture;ddd;cqrs;result;outbox;inbox;shared-kernel</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/leanhluong/libNetCore</PackageProjectUrl>
     <RepositoryUrl>https://github.com/leanhluong/libNetCore</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <!--
+      Gói ký hiệu (.snupkg) để người dùng gỡ lỗi bước thẳng vào code của lib.
+      EmbedUntrackedSources + ContinuousIntegrationBuild làm cho đường dẫn file trong
+      gói ký hiệu là đường dẫn TƯƠNG ĐỐI, không phải "D:\Nextx\..." trên máy tôi —
+      thiếu nó thì người khác tải symbol về cũng không mở được file.
+    -->
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(PackageReadmeFile)' != ''">

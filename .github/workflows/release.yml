@@ -56,6 +56,25 @@ jobs:
             --api-key "${{ secrets.GITHUB_TOKEN }}" \
             --skip-duplicate
 
+      # Đẩy tiếp lên nuget.org. Bỏ qua êm nếu chưa cấu hình secret, để việc phát
+      # hành nội bộ không bị chặn chỉ vì chưa kịp tạo API key.
+      #
+      # ⚠️ Khác GitHub Packages ở một điểm KHÔNG thể sửa: phiên bản đã lên nuget.org
+      # thì KHÔNG BAO GIỜ xoá được, chỉ ẩn khỏi tìm kiếm (unlist). Ai biết số phiên
+      # bản vẫn cài được. Nên bước này luôn nằm SAU bước test.
+      - name: Đẩy lên nuget.org
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          if [ -z "$NUGET_API_KEY" ]; then
+            echo "::warning::Chưa có secret NUGET_API_KEY — bỏ qua bước đẩy lên nuget.org."
+            exit 0
+          fi
+          dotnet nuget push "nupkg/*.nupkg" \
+            --source "https://api.nuget.org/v3/index.json" \
+            --api-key "$NUGET_API_KEY" \
+            --skip-duplicate
+
       - name: Tạo bản phát hành trên GitHub
         uses: softprops/action-gh-release@v2
         with:

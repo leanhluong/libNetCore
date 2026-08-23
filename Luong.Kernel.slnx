@@ -1,0 +1,21 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Luong.Kernel.Application/Luong.Kernel.Application.csproj" />
+    <Project Path="src/Luong.Kernel.AspNetCore/Luong.Kernel.AspNetCore.csproj" />
+    <Project Path="src/Luong.Kernel.Caching/Luong.Kernel.Caching.csproj" />
+    <Project Path="src/Luong.Kernel/Luong.Kernel.csproj" />
+    <Project Path="src/Luong.Kernel.EntityFrameworkCore/Luong.Kernel.EntityFrameworkCore.csproj" />
+    <Project Path="src/Luong.Kernel.Jobs/Luong.Kernel.Jobs.csproj" />
+    <Project Path="src/Luong.Kernel.Messaging/Luong.Kernel.Messaging.csproj" />
+    <Project Path="src/Luong.Kernel.Realtime/Luong.Kernel.Realtime.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Luong.Kernel.Application.Tests/Luong.Kernel.Application.Tests.csproj" />
+    <Project Path="tests/Luong.Kernel.AspNetCore.Tests/Luong.Kernel.AspNetCore.Tests.csproj" />
+    <Project Path="tests/Luong.Kernel.Caching.Tests/Luong.Kernel.Caching.Tests.csproj" />
+    <Project Path="tests/Luong.Kernel.Tests/Luong.Kernel.Tests.csproj" />
+    <Project Path="tests/Luong.Kernel.EntityFrameworkCore.Tests/Luong.Kernel.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Luong.Kernel.Messaging.Tests/Luong.Kernel.Messaging.Tests.csproj" />
+    <Project Path="tests/Luong.Kernel.Realtime.Tests/Luong.Kernel.Realtime.Tests.csproj" />
+  </Folder>
+</Solution>
