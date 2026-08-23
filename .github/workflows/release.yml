@@ -39,6 +39,7 @@ jobs:
       # Chặn sai sót kinh điển: tag v0.2.0 nhưng quên sửa <Version> trong
       # Directory.Build.props, thế là phát hành ra gói 0.1.0 mang tên 0.2.0.
       - name: Đối chiếu tag với số phiên bản trong mã nguồn
+        if: github.ref_type == 'tag'
         run: |
           TAG_VERSION="${GITHUB_REF_NAME#v}"
           # Neo đầu dòng: nếu không, biểu thức này bắt trúng cả chữ <Version>
@@ -105,7 +106,10 @@ jobs:
       #       --api-key "$NUGET_API_KEY" \
       #       --skip-duplicate
 
+      # Chỉ tạo Release khi chạy từ một tag. Bấm chạy tay thì không có tag để gắn
+      # release vào, và action này sẽ đỏ.
       - name: Tạo bản phát hành trên GitHub
+        if: github.ref_type == 'tag'
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
