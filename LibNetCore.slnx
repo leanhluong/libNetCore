@@ -1,15 +1,19 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/LibNetCore.AspNetCore/LibNetCore.AspNetCore.csproj" />
+    <Project Path="src/LibNetCore.Caching/LibNetCore.Caching.csproj" />
     <Project Path="src/LibNetCore.Core/LibNetCore.Core.csproj" />
     <Project Path="src/LibNetCore.EntityFrameworkCore/LibNetCore.EntityFrameworkCore.csproj" />
     <Project Path="src/LibNetCore.Jobs/LibNetCore.Jobs.csproj" />
     <Project Path="src/LibNetCore.Messaging/LibNetCore.Messaging.csproj" />
+    <Project Path="src/LibNetCore.Realtime/LibNetCore.Realtime.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/LibNetCore.AspNetCore.Tests/LibNetCore.AspNetCore.Tests.csproj" />
+    <Project Path="tests/LibNetCore.Caching.Tests/LibNetCore.Caching.Tests.csproj" />
     <Project Path="tests/LibNetCore.Core.Tests/LibNetCore.Core.Tests.csproj" />
     <Project Path="tests/LibNetCore.EntityFrameworkCore.Tests/LibNetCore.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/LibNetCore.Messaging.Tests/LibNetCore.Messaging.Tests.csproj" />
+    <Project Path="tests/LibNetCore.Realtime.Tests/LibNetCore.Realtime.Tests.csproj" />
   </Folder>
 </Solution>

@@ -1,0 +1,63 @@
+name: CI
+
+# Chạy mỗi lần đẩy code lên develop/main, và mỗi lần mở PR.
+# Mục tiêu: không bao giờ có commit đỏ nằm trên develop mà không ai biết.
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+  workflow_dispatch: # cho phép bấm chạy tay từ giao diện GitHub
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Lấy mã nguồn
+        uses: actions/checkout@v4
+
+      - name: Cài .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # Cache gói NuGet giữa các lần chạy. Không cache thì mỗi lần CI đều tải lại
+      # toàn bộ phụ thuộc — chậm và phụ thuộc vào nuget.org có đang khoẻ hay không.
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Khôi phục phụ thuộc
+        run: dotnet restore
+
+      # TreatWarningsAsErrors đang bật, nên bước này cũng chặn luôn cả cảnh báo
+      # lỗ hổng bảo mật của package phụ thuộc (NU1903).
+      - name: Build
+        run: dotnet build --no-restore -c Release
+
+      - name: Test
+        run: dotnet test --no-build -c Release --logger "trx;LogFileName=test-results.trx" --results-directory TestResults
+
+      - name: Lưu kết quả test
+        uses: actions/upload-artifact@v4
+        if: always() # kể cả khi test đỏ — nhất là khi test đỏ
+        with:
+          name: test-results
+          path: TestResults/
+          retention-days: 14
+
+      # Đóng gói thử ở mọi lần chạy, dù không phát hành. Nếu metadata NuGet hỏng
+      # thì phải biết NGAY, chứ không phải lúc đang cần phát hành gấp.
+      - name: Đóng gói thử
+        run: dotnet pack --no-build -c Release -o nupkg
+
+      - name: Lưu gói
+        uses: actions/upload-artifact@v4
+        with:
+          name: nupkg
+          path: nupkg/*.nupkg
+          retention-days: 14

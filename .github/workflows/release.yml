@@ -1,0 +1,61 @@
+name: Release
+
+# Chỉ chạy khi đẩy một tag dạng v0.2.0.
+# Phát hành gắn với TAG chứ không gắn với nhánh: mỗi phiên bản đã phát hành
+# luôn trỏ về đúng một điểm cố định trong lịch sử, không bao giờ trôi.
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write # cần quyền này mới đẩy được lên GitHub Packages
+
+    steps:
+      - name: Lấy mã nguồn
+        uses: actions/checkout@v4
+
+      - name: Cài .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # Chặn sai sót kinh điển: tag v0.2.0 nhưng quên sửa <Version> trong
+      # Directory.Build.props, thế là phát hành ra gói 0.1.0 mang tên 0.2.0.
+      - name: Đối chiếu tag với số phiên bản trong mã nguồn
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          FILE_VERSION=$(grep -oP '(?<=<Version>)[^<]+' Directory.Build.props | head -1)
+          echo "Tag: $TAG_VERSION | Directory.Build.props: $FILE_VERSION"
+          if [ "$TAG_VERSION" != "$FILE_VERSION" ]; then
+            echo "::error::Tag ($TAG_VERSION) không khớp <Version> trong Directory.Build.props ($FILE_VERSION)."
+            exit 1
+          fi
+
+      - name: Build
+        run: dotnet build -c Release
+
+      # Không phát hành thứ chưa qua test. Đây là lý do bước này không được bỏ
+      # cho nhanh, dù CI đã chạy trên commit đó rồi.
+      - name: Test
+        run: dotnet test --no-build -c Release
+
+      - name: Đóng gói
+        run: dotnet pack --no-build -c Release -o nupkg
+
+      - name: Đẩy lên GitHub Packages
+        run: |
+          dotnet nuget push "nupkg/*.nupkg" \
+            --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
+            --api-key "${{ secrets.GITHUB_TOKEN }}" \
+            --skip-duplicate
+
+      - name: Tạo bản phát hành trên GitHub
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: nupkg/*.nupkg
