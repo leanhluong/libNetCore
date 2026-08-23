@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/LibNetCore.Application/LibNetCore.Application.csproj" />
     <Project Path="src/LibNetCore.AspNetCore/LibNetCore.AspNetCore.csproj" />
     <Project Path="src/LibNetCore.Caching/LibNetCore.Caching.csproj" />
     <Project Path="src/LibNetCore.Core/LibNetCore.Core.csproj" />
@@ -9,6 +10,7 @@
     <Project Path="src/LibNetCore.Realtime/LibNetCore.Realtime.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/LibNetCore.Application.Tests/LibNetCore.Application.Tests.csproj" />
     <Project Path="tests/LibNetCore.AspNetCore.Tests/LibNetCore.AspNetCore.Tests.csproj" />
     <Project Path="tests/LibNetCore.Caching.Tests/LibNetCore.Caching.Tests.csproj" />
     <Project Path="tests/LibNetCore.Core.Tests/LibNetCore.Core.Tests.csproj" />
