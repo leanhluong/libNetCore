@@ -7,5 +7,6 @@
   <Folder Name="/tests/">
     <Project Path="tests/LibNetCore.AspNetCore.Tests/LibNetCore.AspNetCore.Tests.csproj" />
     <Project Path="tests/LibNetCore.Core.Tests/LibNetCore.Core.Tests.csproj" />
+    <Project Path="tests/LibNetCore.EntityFrameworkCore.Tests/LibNetCore.EntityFrameworkCore.Tests.csproj" />
   </Folder>
 </Solution>

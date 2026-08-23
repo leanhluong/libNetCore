@@ -12,7 +12,7 @@ namespace LibNetCore.Core.Domain;
 /// một dòng nào về RabbitMQ, email hay SignalR — hạ tầng đọc danh sách sự kiện này
 /// sau khi lưu thành công rồi mới phát đi. Đây chính là chỗ Outbox sẽ cắm vào.
 /// </summary>
-public abstract class AggregateRoot<TId> : Entity<TId>
+public abstract class AggregateRoot<TId> : Entity<TId>, IHasDomainEvents
     where TId : notnull
 {
     private readonly List<IDomainEvent> _domainEvents = [];
