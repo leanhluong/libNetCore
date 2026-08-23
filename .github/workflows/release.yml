@@ -11,9 +11,15 @@ jobs:
   publish:
     runs-on: ubuntu-latest
 
+    # Token tạm mà GitHub cấp cho job này được làm đúng những gì khai ở đây, không hơn.
     permissions:
-      contents: read
-      packages: write # cần quyền này mới đẩy được lên GitHub Packages
+      # write chứ không phải read: GitHub xếp trang Release vào nhóm "contents", nên
+      # tạo release là GHI vào repo. Khai read thì bước cuối trả 403
+      # "Resource not accessible by integration".
+      contents: write
+
+      # Đẩy gói lên GitHub Packages.
+      packages: write
 
     steps:
       - name: Lấy mã nguồn
