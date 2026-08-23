@@ -29,7 +29,9 @@ jobs:
       - name: Đối chiếu tag với số phiên bản trong mã nguồn
         run: |
           TAG_VERSION="${GITHUB_REF_NAME#v}"
-          FILE_VERSION=$(grep -oP '(?<=<Version>)[^<]+' Directory.Build.props | head -1)
+          # Neo đầu dòng: nếu không, biểu thức này bắt trúng cả chữ <Version>
+          # nằm trong phần chú thích ngay phía trên và so nhầm với một chuỗi vô nghĩa.
+          FILE_VERSION=$(grep -oP '^\s*<Version>\K[^<]+' Directory.Build.props | head -1)
           echo "Tag: $TAG_VERSION | Directory.Build.props: $FILE_VERSION"
           if [ "$TAG_VERSION" != "$FILE_VERSION" ]; then
             echo "::error::Tag ($TAG_VERSION) không khớp <Version> trong Directory.Build.props ($FILE_VERSION)."
