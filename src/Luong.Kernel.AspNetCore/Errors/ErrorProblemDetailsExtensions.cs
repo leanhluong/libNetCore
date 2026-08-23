@@ -1,3 +1,5 @@
+using System.Globalization;
+using Luong.Kernel.Localization;
 using Microsoft.AspNetCore.Http;
 using Luong.Kernel.Primitives;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +31,39 @@ public static class ErrorProblemDetailsExtensions
         ErrorType.Conflict => StatusCodes.Status409Conflict,
         _ => StatusCodes.Status500InternalServerError,
     };
+
+    /// <summary>
+    /// Dịch phần <c>description</c> của mọi lỗi trong một <see cref="ProblemDetails"/>.
+    ///
+    /// Đặt ở đây, sau khi Problem Details đã dựng xong, là có chủ ý: <see cref="Error"/> và
+    /// <see cref="ToProblemDetails"/> giữ nguyên độ thuần khiết — chúng không biết ngôn ngữ
+    /// là gì. Dịch chỉ là một bước SAU, và bỏ bước đó đi thì hệ thống vẫn chạy đúng, chỉ là
+    /// bằng tiếng mặc định.
+    ///
+    /// <b>Không tìm thấy bản dịch thì GIỮ NGUYÊN câu mặc định trong code.</b> Trả về chính
+    /// cái mã (<c>Auth.InvalidCredentials</c>) là đẩy một chuỗi kỹ thuật lên màn hình khách
+    /// hàng; giữ câu mặc định thì họ vẫn đọc hiểu, còn chỗ thiếu bản dịch để test bắt ở CI.
+    /// </summary>
+    public static ProblemDetails Localize(
+        this ProblemDetails problem,
+        IMessageCatalog? catalog,
+        CultureInfo? culture = null)
+    {
+        if (catalog is null || problem.Extensions["errors"] is not IReadOnlyList<ErrorDetail> details)
+        {
+            return problem;
+        }
+
+        var target = culture ?? CultureInfo.CurrentUICulture;
+
+        problem.Extensions["errors"] = details
+            .Select(detail => new ErrorDetail(
+                detail.Code,
+                catalog.Find(detail.Code, target) ?? detail.Description))
+            .ToList();
+
+        return problem;
+    }
 
     public static ProblemDetails ToProblemDetails(this Error error)
     {
