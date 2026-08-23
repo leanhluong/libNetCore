@@ -28,6 +28,7 @@ internal sealed class NoteDbContext(DbContextOptions<NoteDbContext> options) : D
     {
         modelBuilder.ApplySoftDeleteQueryFilter();
         modelBuilder.UseSnakeCaseNames();
+        modelBuilder.UseSortableDateTimeOffsets();
     }
 }
 

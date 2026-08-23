@@ -38,6 +38,7 @@ internal sealed class HrDbContext(DbContextOptions<HrDbContext> options) : DbCon
     {
         modelBuilder.AddOutbox();
         modelBuilder.UseSnakeCaseNames();
+        modelBuilder.UseSortableDateTimeOffsets();
     }
 }
 
