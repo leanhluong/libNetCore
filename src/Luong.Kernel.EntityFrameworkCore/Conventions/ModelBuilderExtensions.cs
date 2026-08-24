@@ -28,7 +28,26 @@ public static class ModelBuilderExtensions
 
             foreach (var property in entity.GetProperties())
             {
-                property.SetColumnName(SnakeCaseNameConverter.ToSnakeCase(property.Name));
+                // NHƯỜNG tên đã khai tay bằng HasColumnName.
+                //
+                // Sự cố có thật (ONoOffice, 2026-08-24): một thuộc tính ánh xạ vào trường
+                // sau lưng `_permissions` được khai HasColumnName("permissions"), nhưng
+                // migration vẫn sinh ra cột tên `_permissions` — gạch dưới của C# rò
+                // thẳng vào schema database. Không lỗi, không cảnh báo, chỉ là tên đã
+                // khai bị vứt đi.
+                //
+                // Nguyên nhân là dòng dưới đây từng đọc property.Name (tên trong C#) chứ
+                // không nhìn tên cột đang có. Với cột thường thì hai đường cho cùng kết
+                // quả nên chẳng ai thấy gì; nó chỉ lộ ra đúng ở chỗ có người cố tình đặt
+                // tên khác — mà đó lại là chỗ người ta có LÝ DO để đặt khác.
+                // GetColumnName() trả tên đã khai tay nếu có, không thì trả tên C#. Đưa
+                // chính nó vào phép đổi thì cả hai đường đều ra đúng: "FullName" thành
+                // "full_name", còn "permissions" (đã khai tay) giữ nguyên "permissions"
+                // — phép đổi không làm gì thêm với chuỗi vốn đã snake_case.
+                //
+                // Cùng một dòng, và đây cũng chính là cách các vòng lặp bảng/khoá/chỉ mục
+                // bên dưới vẫn làm từ đầu. Chỉ mỗi cột là đọc nhầm nguồn.
+                property.SetColumnName(SnakeCaseNameConverter.ToSnakeCase(property.GetColumnName()));
             }
 
             foreach (var key in entity.GetKeys())
